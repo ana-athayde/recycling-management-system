@@ -1,88 +1,75 @@
-# Projeto de Sistema de Gerenciamento - Reciclagem
+# Recycling Management Database
 
-Este é um projeto de sistema de gerenciamento de reciclagem com um banco de dados MySQL. O sistema permite a gestão de máquinas, filiais, materiais e cidades relacionadas à reciclagem.
+A command-line CRUD application for a recycling company database. It is built with Python and MySQL and manages recycling materials, cities, branch offices, and the machines assigned to each branch. The project is a database coursework example; the interactive interface and SQL schema cover these four entities.
 
-## Arquivos do Projeto
+## Features
 
-- `Cidades.py`: Contém funções para gerenciar cidades, incluindo criação de tabela, inserção, atualização, exclusão e consulta.
+- Create, list, search, update, and delete records for materials, cities, branches, and machines.
+- Check foreign-key relationships when adding or deleting related records.
+- List the machines assigned to a branch (JOIN query).
+- Find the branch that owns the most expensive machine (aggregation query).
+- Load a sample dataset from the SQL script.
 
-- `Conexao.py`: Estabelece a conexão com o banco de dados MySQL e inclui a função para desconectar.
+## Database Schema
 
-- `Filiais.py`: Implementa funções para gerenciar filiais, como criação de tabela, inserção, atualização, exclusão e consulta.
+The SQL script defines four tables:
 
-- `Maquinas.py`: Contém funções relacionadas à gestão de máquinas, incluindo criação de tabela, inserção, atualização, exclusão e consulta.
+- `materiais`: recycling status, color, and material type.
+- `cidades`: city name, state, and size.
+- `filiais`: branch contact and address details, with references to a city and a material.
+- `maquinas`: machine details, purchase and last-revision dates, value, and a reference to a branch.
 
-- `Materiais.py`: Contém funções para gerenciar materiais, incluindo criação de tabela, inserção, atualização, exclusão e consulta.
+The relationships are represented by foreign keys: branches reference cities and materials, and machines reference branches. The SQL script also inserts and updates sample records and includes example JOIN and aggregate queries.
 
-- `Principal.py`: Este arquivo contém o código principal do sistema, incluindo um menu interativo que permite ao usuário realizar várias operações no banco de dados.
+## Project Files
 
-- `projeto_reciclagem.sql`: Script SQL que define a estrutura do banco de dados, incluindo tabelas, relacionamentos e chaves estrangeiras.
+The application modules are in `Trabalho_BAN/projeto_reciclagem/`:
 
-## Esquema Lógico Relacional
+- `Principal.py`: interactive menu and database queries.
+- `Conexao.py`: MySQL connection settings.
+- `Cidades.py`, `Filiais.py`, `Materiais.py`, and `Maquinas.py`: operations for each entity.
 
-- ColetoresSeparadores(#cpf, nome, fone, nis, rua, bairro, numero, &idfilial,  &placa)
-- Maquinas(#idmaq, tpmaterial, anocompra, anoulrev, nome, tipo, valor, descricao, &idfilial)
-- Filiais(#idfilial, nome, fone, rua, numero, bairro, &idcida, &idmate)
-- Cidades(#idcida, nome, estado, tam)
-- Materiais(#idmate, reciclado, cor, tipo)
-- Fornecedores(#cnpjfor, fone, nome, rua, numero, bairro)
-- Trechos(#idtrec, partida, chegada, &idcida)
-- Caminhoes(#placa, tamanhocarga, &idtre , cpf, nome, fone, nis, rua, bairro, numero, cnh, datacoleta, &idfilial, &idmate)
-- Clientes(#cnpjcli, fone, nome, rua, numero, bairro)
-- Venda(#&idmate, #&cnpjcli, dataven, #qtdmaterial)
-- Compra(#&idmate, #&cnpjfor, datacom, #qtdmaterial)
+The database setup and sample data are in `projeto_reciclagemdb.sql` at the repository root.
 
+## Requirements
 
-### História do trabalho:
+- Python 3
+- MySQL Server
+- The Python package `mysql-connector-python`
 
-Nossa empresa foi contratada para modelar um banco de dados para uma companhia de reciclagem de lixo com várias filiais responsáveis por uma única cidade, embora cada cidade possa ser servida por mais de uma filial.  A coleta de material pode ser realizada por meio de um fornecedor ou por caminhões da própria organização. Cada caminhão conta com um motorista e dois garis, e realiza um trecho específico, definido por um ponto de partida e chegada.
+Install the connector with:
 
-Após a coleta e separação, cada tipo de lixo é enviado para uma empresa. Cada empresa é responsável por um único material, contudo cada material pode ser reciclado por mais de uma empresa. Como para cada tipo de lixo existe um processo específico de reciclagem, as empresas operam com diferentes máquinas, para as quais precisamos guardar algumas informações: nome, tipo, valor, descrição, o tipo de material que recicla, ano de compra, e da sua última revisão. O material já reciclado é transportado e vendido como matéria-prima para outras empresas. A organização gostaria de manter as informações dos materiais vendidos nos últimos dez anos.
+```bash
+python -m pip install mysql-connector-python
+```
 
+## Setup and Run
 
-### Esquema conceitual
+1. Create the database:
 
-![projeto-corrigido](https://user-images.githubusercontent.com/74029052/180698166-da976ec1-5539-4a17-8b08-d7327be274d8.png)
+	```sql
+	CREATE DATABASE projeto_reciclagemDB;
+	```
 
-## Documentação das Funções
+2. From the repository root, import the schema and sample data. For example, with the MySQL command-line client:
 
-### Cidades.py:
-1. `all_cidades()`: Recupera e imprime todas as cidades da tabela de cidades ordenadas pelo ID.
-2. `create_table()`: Cria a tabela de cidades no banco de dados.
-3. `insert_into(values)`: Insere uma nova cidade na tabela de cidades. Recebe uma lista de valores que incluem o nome, estado e tamanho da cidade.
-4. `selec_by_id(id)`: Recupera e imprime a cidade com base no ID especificado. Retorna o número de cidades recuperadas (0 ou 1).
-5. `update_table(coluna, valor, id)`: Atualiza um valor específico na tabela de cidades. Recebe o nome da coluna, o novo valor e o ID da cidade a ser atualizada.
-6. `delete_row_by_id(id)`: Exclui uma cidade da tabela de cidades, desde que não haja filiais associadas a ela. Recebe o ID da cidade a ser excluída.
+	```bash
+	mysql -u root -p projeto_reciclagemDB < projeto_reciclagemdb.sql
+	```
 
-### Conexao.py:
-1. `connect()`: Estabelece uma conexão com o banco de dados MySQL usando as credenciais fornecidas.
-2. `desconectar(my_db)`: Fecha a conexão com o banco de dados. Recebe a conexão como parâmetro.
+	The database must exist before importing the script.
 
-### Filiais.py:
-1. `all_filiais()`: Recupera e imprime todas as filiais da tabela de filiais ordenadas pelo ID.
-2. `create_table()`: Cria a tabela de filiais no banco de dados.
-3. `insert_into(values)`: Insere uma nova filial na tabela de filiais. Recebe uma lista de valores que incluem nome, telefone, rua, número, bairro, ID da cidade e ID do material.
-4. `selec_by_id(id)`: Recupera e imprime a filial com base no ID especificado. Retorna o número de filiais recuperadas (0 ou 1).
-5. `update_table(coluna, valor, id)`: Atualiza um valor específico na tabela de filiais. Recebe o nome da coluna, o novo valor e o ID da filial a ser atualizada.
-6. `delete_row_by_id(id)`: Exclui uma filial da tabela de filiais, desde que não haja máquinas associadas a ela. Recebe o ID da filial a ser excluída.
+3. Configure the MySQL host, username, password, and database in `Trabalho_BAN/projeto_reciclagem/Conexao.py`. The current file uses `localhost`, user `root`, password `1234`, and database `projeto_reciclagemDB`.
 
-### Maquinas.py:
-1. `all_maquinas()`: Recupera e imprime todas as máquinas da tabela de máquinas ordenadas pelo ID.
-2. `create_table()`: Cria a tabela de máquinas no banco de dados.
-3. `insert_into(values)`: Insere uma nova máquina na tabela de máquinas. Recebe uma lista de valores que incluem tipo de material, ano de compra, ano de última revisão, nome, tipo, valor, descrição e ID da filial.
-4. `selec_by_id(id)`: Recupera e imprime a máquina com base no ID especificado. Retorna o número de máquinas recuperadas (0 ou 1).
-5. `update_table(coluna, valor, id)`: Atualiza um valor específico na tabela de máquinas. Recebe o nome da coluna, o novo valor e o ID da máquina a ser atualizada.
-6. `delete_row_by_id(id)`: Exclui uma máquina da tabela de máquinas.
+4. Start the application from its module directory:
 
-### Materiais.py:
-1. `all_materiais()`: Recupera e imprime todos os materiais da tabela de materiais ordenados pelo ID.
-2. `create_table()`: Cria a tabela de materiais no banco de dados.
-3. `insert_into(values)`: Insere um novo material na tabela de materiais. Recebe uma lista de valores que incluem se é reciclado, cor e tipo.
-4. `selec_by_id(id)`: Recupera e imprime o material com base no ID especificado. Retorna o número de materiais recuperados (0 ou 1).
-5. `update_table(coluna, valor, id)`: Atualiza um valor específico na tabela de materiais. Recebe o nome da coluna, o novo valor e o ID do material a ser atualizado.
-6. `delete_row_by_id(id)`: Exclui um material da tabela de materiais.
+	```bash
+	cd Trabalho_BAN/projeto_reciclagem
+	python Principal.py
+	```
 
-### Principal.py:
-Este arquivo contém uma série de funções para interagir com o banco de dados, incluindo inserção, atualização, pesquisa, exclusão e impressão de registros em várias tabelas (maquinas, filiais, materiais e cidades). Também inclui funções para realizar operações de junção e agregação de dados nas tabelas. Além disso, há um menu interativo que permite ao usuário selecionar as operações desejadas.
+## Using the Menu
+
+Choose an option to insert, update, search by ID, delete, or list records; run the JOIN or aggregation query; display all four tables; or exit. When prompted for a table, use `maquinas`, `filiais`, `materiais`, or `cidades`. Insert values as comma-separated input in the column order requested by the selected operation. The application prints query results and operation messages in the terminal.
 
 
